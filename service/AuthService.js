@@ -1,23 +1,24 @@
 import axios from 'axios';
 import Alert from 'react-native';
 import API from '../constants/Api';
+import deviceStorage from '../service/DeviceStorage';
 
 export default class AuthService{
     
-    login(email, password) {
-
-        console.log(API.AUTH);
-        console.log(email, password);
+    async login(username, password) {
         return axios.post(API.AUTH, 
             {
-                username: email,
-                password: password,
+                username,
+                password,
                 rememberMe: true
             }
         )
-        .then((response) => {
-            console.log(response);
-        
+        .then(async (response) => {
+            console.log(response.headers.authorization);
+            deviceStorage.saveItem('bearer', response.headers.authorization);
+            let result = await deviceStorage.getItem('bearer');
+
+            console.log(result);
         })
         .catch((error) => {
             console.log(error);
